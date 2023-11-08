@@ -1,0 +1,1117 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="stylesheet" href="css/leaflet.css"><link rel="stylesheet" href="css/L.Control.Locate.min.css">
+        <link rel="stylesheet" href="css/qgis2web.css"><link rel="stylesheet" href="css/fontawesome-all.min.css">
+        <link rel="stylesheet" href="css/filter.css">
+<link rel="stylesheet" href="css/nouislider.min.css">
+        <link rel="stylesheet" href="css/leaflet-control-geocoder.Geocoder.css">
+        <link rel="stylesheet" href="css/leaflet-measure.css">
+        <style>
+        html, body, #map {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+        }
+        </style>
+        <title>Munali Constituency CDF Project Monitoring Tool</title>
+    </head>
+    <body>
+        <div id="map">
+        </div>
+        <script src="js/qgis2web_expressions.js"></script>
+        <script src="js/leaflet.js"></script><script src="js/L.Control.Locate.min.js"></script>
+        <script src="js/multi-style-layer.js"></script>
+        <script src="js/leaflet-svg-shape-markers.min.js"></script>
+        <script src="js/leaflet.rotatedMarker.js"></script>
+        <script src="js/leaflet.pattern.js"></script>
+        <script src="js/leaflet-hash.js"></script>
+        <script src="js/Autolinker.min.js"></script>
+        <script src="js/rbush.min.js"></script>
+        <script src="js/labelgun.min.js"></script>
+        <script src="js/labels.js"></script>
+        <script src="js/leaflet-control-geocoder.Geocoder.js"></script>
+        <script src="js/leaflet-measure.js"></script>
+        <script src="js/tailDT.js"></script>
+<script src="js/nouislider.min.js"></script>
+<script src="js/wNumb.js"></script>
+        <script src="data/MunaliConstituencyWards_2.js"></script>
+        <script src="data/RoadOct23_3.js"></script>
+        <script src="data/BuildingOct23_4.js"></script>
+        <script src="data/RecreationOct23_5.js"></script>
+        <script src="data/ServiceOct23_6.js"></script>
+        <script>
+        var highlightLayer;
+        function highlightFeature(e) {
+            highlightLayer = e.target;
+
+            if (e.target.feature.geometry.type === 'LineString') {
+              highlightLayer.setStyle({
+                color: '#ffff00',
+              });
+            } else {
+              highlightLayer.setStyle({
+                fillColor: '#ffff00',
+                fillOpacity: 1
+              });
+            }
+        }
+        var map = L.map('map', {
+            zoomControl:true, maxZoom:28, minZoom:1
+        }).fitBounds([[-15.419524979591369,28.29568417848131],[-15.320077109336857,28.423355738510878]]);
+        var hash = new L.Hash(map);
+        map.attributionControl.setPrefix('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
+        var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
+        L.control.locate({locateOptions: {maxZoom: 19}}).addTo(map);
+        var measureControl = new L.Control.Measure({
+            position: 'topleft',
+            primaryLengthUnit: 'meters',
+            secondaryLengthUnit: 'kilometers',
+            primaryAreaUnit: 'sqmeters',
+            secondaryAreaUnit: 'hectares'
+        });
+        measureControl.addTo(map);
+        document.getElementsByClassName('leaflet-control-measure-toggle')[0]
+        .innerHTML = '';
+        document.getElementsByClassName('leaflet-control-measure-toggle')[0]
+        .className += ' fas fa-ruler';
+        var bounds_group = new L.featureGroup([]);
+        function setBounds() {
+            map.setMaxBounds(map.getBounds());
+        }
+        map.createPane('pane_ESRISatellite_0');
+        map.getPane('pane_ESRISatellite_0').style.zIndex = 400;
+        var layer_ESRISatellite_0 = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            pane: 'pane_ESRISatellite_0',
+            opacity: 1.0,
+            attribution: '',
+            minZoom: 1,
+            maxZoom: 28,
+            minNativeZoom: 0,
+            maxNativeZoom: 20
+        });
+        layer_ESRISatellite_0;
+        map.addLayer(layer_ESRISatellite_0);
+        map.createPane('pane_GoogleLabels_1');
+        map.getPane('pane_GoogleLabels_1').style.zIndex = 401;
+        var layer_GoogleLabels_1 = L.tileLayer('https://mt1.google.com/vt/lyrs=h&x={x}&y={y}&z={z}', {
+            pane: 'pane_GoogleLabels_1',
+            opacity: 0.94,
+            attribution: '<a href="https://www.google.at/permissions/geoguidelines/attr-guide.html">Map data ©2015 Google</a>',
+            minZoom: 1,
+            maxZoom: 28,
+            minNativeZoom: 0,
+            maxNativeZoom: 20
+        });
+        layer_GoogleLabels_1;
+        map.addLayer(layer_GoogleLabels_1);
+        function pop_MunaliConstituencyWards_2(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['fid'] !== null ? autolinker.link(feature.properties['fid'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['id'] !== null ? autolinker.link(feature.properties['id'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['ward_name'] !== null ? autolinker.link(feature.properties['ward_name'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['prov_code'] !== null ? autolinker.link(feature.properties['prov_code'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['provincena'] !== null ? autolinker.link(feature.properties['provincena'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['district_c'] !== null ? autolinker.link(feature.properties['district_c'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['districtna'] !== null ? autolinker.link(feature.properties['districtna'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['const_code'] !== null ? autolinker.link(feature.properties['const_code'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['ward_code'] !== null ? autolinker.link(feature.properties['ward_code'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_MunaliConstituencyWards_2_0() {
+            return {
+                pane: 'pane_MunaliConstituencyWards_2',
+                opacity: 1,
+                color: 'rgba(255,255,255,1.0)',
+                dashArray: '10,5',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 2.0, 
+                fillOpacity: 0,
+                interactive: false,
+            }
+        }
+        map.createPane('pane_MunaliConstituencyWards_2');
+        map.getPane('pane_MunaliConstituencyWards_2').style.zIndex = 402;
+        map.getPane('pane_MunaliConstituencyWards_2').style['mix-blend-mode'] = 'normal';
+        var layer_MunaliConstituencyWards_2 = new L.geoJson(json_MunaliConstituencyWards_2, {
+            attribution: '',
+            interactive: false,
+            dataVar: 'json_MunaliConstituencyWards_2',
+            layerName: 'layer_MunaliConstituencyWards_2',
+            pane: 'pane_MunaliConstituencyWards_2',
+            onEachFeature: pop_MunaliConstituencyWards_2,
+            style: style_MunaliConstituencyWards_2_0,
+        });
+        bounds_group.addLayer(layer_MunaliConstituencyWards_2);
+        map.addLayer(layer_MunaliConstituencyWards_2);
+        function pop_RoadOct23_3(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">Inspector</th>\
+                        <td>' + (feature.properties['Inspector'] !== null ? autolinker.link(feature.properties['Inspector'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Name</th>\
+                        <td>' + (feature.properties['Name'] !== null ? autolinker.link(feature.properties['Name'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Type</th>\
+                        <td>' + (feature.properties['Type'] !== null ? autolinker.link(feature.properties['Type'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Class</th>\
+                        <td>' + (feature.properties['Class'] !== null ? autolinker.link(feature.properties['Class'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Lanes</th>\
+                        <td>' + (feature.properties['Lanes'] !== null ? autolinker.link(feature.properties['Lanes'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Stage</th>\
+                        <td>' + (feature.properties['Stage'] !== null ? autolinker.link(feature.properties['Stage'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Progress_percent</th>\
+                        <td>' + (feature.properties['Progress_percent'] !== null ? autolinker.link(feature.properties['Progress_percent'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Photo</th>\
+                        <td>' + (feature.properties['Photo'] !== null ? '<img src="images/' + String(feature.properties['Photo']).replace(/[\\\/:]/g, '_').trim() + '">' : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Comment</th>\
+                        <td>' + (feature.properties['Comment'] !== null ? autolinker.link(feature.properties['Comment'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Inspection_Date</th>\
+                        <td>' + (feature.properties['Inspection_Date'] !== null ? autolinker.link(feature.properties['Inspection_Date'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Ward</th>\
+                        <td>' + (feature.properties['Ward'] !== null ? autolinker.link(feature.properties['Ward'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Length(m)</th>\
+                        <td>' + (feature.properties['Length(m)'] !== null ? autolinker.link(feature.properties['Length(m)'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Commencement_Date</th>\
+                        <td>' + (feature.properties['Commencement_Date'] !== null ? autolinker.link(feature.properties['Commencement_Date'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_RoadOct23_3_0() {
+            return {
+                pane: 'pane_RoadOct23_3',
+                opacity: 1,
+                color: 'rgba(255,255,255,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+        }
+        function style_RoadOct23_3_1() {
+            return {
+                pane: 'pane_RoadOct23_3',
+                opacity: 1,
+                color: 'rgba(255,255,255,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+        }
+        function style_RoadOct23_3_2() {
+            return {
+                pane: 'pane_RoadOct23_3',
+                opacity: 1,
+                color: 'rgba(9,71,255,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 1.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+        }
+        map.createPane('pane_RoadOct23_3');
+        map.getPane('pane_RoadOct23_3').style.zIndex = 403;
+        map.getPane('pane_RoadOct23_3').style['mix-blend-mode'] = 'normal';
+        var layer_RoadOct23_3 = new L.geoJson.multiStyle(json_RoadOct23_3, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_RoadOct23_3',
+            layerName: 'layer_RoadOct23_3',
+            pane: 'pane_RoadOct23_3',
+            onEachFeature: pop_RoadOct23_3,
+            styles: [style_RoadOct23_3_0,style_RoadOct23_3_1,style_RoadOct23_3_2,]
+        });
+        bounds_group.addLayer(layer_RoadOct23_3);
+        map.addLayer(layer_RoadOct23_3);
+        function pop_BuildingOct23_4(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">Inspector</th>\
+                        <td>' + (feature.properties['Inspector'] !== null ? autolinker.link(feature.properties['Inspector'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Name</th>\
+                        <td>' + (feature.properties['Name'] !== null ? autolinker.link(feature.properties['Name'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Type</th>\
+                        <td>' + (feature.properties['Type'] !== null ? autolinker.link(feature.properties['Type'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Stage</th>\
+                        <td>' + (feature.properties['Stage'] !== null ? autolinker.link(feature.properties['Stage'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Progress_percent</th>\
+                        <td>' + (feature.properties['Progress_percent'] !== null ? autolinker.link(feature.properties['Progress_percent'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Photo</th>\
+                        <td>' + (feature.properties['Photo'] !== null ? '<img src="images/' + String(feature.properties['Photo']).replace(/[\\\/:]/g, '_').trim() + '">' : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Comment</th>\
+                        <td>' + (feature.properties['Comment'] !== null ? autolinker.link(feature.properties['Comment'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Inspection_Date</th>\
+                        <td>' + (feature.properties['Inspection_Date'] !== null ? autolinker.link(feature.properties['Inspection_Date'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Ward</th>\
+                        <td>' + (feature.properties['Ward'] !== null ? autolinker.link(feature.properties['Ward'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Commencement_Date</th>\
+                        <td>' + (feature.properties['Commencement_Date'] !== null ? autolinker.link(feature.properties['Commencement_Date'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_BuildingOct23_4_0() {
+            return {
+                pane: 'pane_BuildingOct23_4',
+                opacity: 1,
+                color: 'rgba(244,3,168,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 2.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(244,3,168,0.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_BuildingOct23_4');
+        map.getPane('pane_BuildingOct23_4').style.zIndex = 404;
+        map.getPane('pane_BuildingOct23_4').style['mix-blend-mode'] = 'normal';
+        var layer_BuildingOct23_4 = new L.geoJson(json_BuildingOct23_4, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_BuildingOct23_4',
+            layerName: 'layer_BuildingOct23_4',
+            pane: 'pane_BuildingOct23_4',
+            onEachFeature: pop_BuildingOct23_4,
+            style: style_BuildingOct23_4_0,
+        });
+        bounds_group.addLayer(layer_BuildingOct23_4);
+        map.addLayer(layer_BuildingOct23_4);
+        function pop_RecreationOct23_5(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">Inspector</th>\
+                        <td>' + (feature.properties['Inspector'] !== null ? autolinker.link(feature.properties['Inspector'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Name</th>\
+                        <td>' + (feature.properties['Name'] !== null ? autolinker.link(feature.properties['Name'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Type</th>\
+                        <td>' + (feature.properties['Type'] !== null ? autolinker.link(feature.properties['Type'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Progress_percent</th>\
+                        <td>' + (feature.properties['Progress_percent'] !== null ? autolinker.link(feature.properties['Progress_percent'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Photo</th>\
+                        <td>' + (feature.properties['Photo'] !== null ? '<img src="images/' + String(feature.properties['Photo']).replace(/[\\\/:]/g, '_').trim() + '">' : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Comment</th>\
+                        <td>' + (feature.properties['Comment'] !== null ? autolinker.link(feature.properties['Comment'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Inspection_Date</th>\
+                        <td>' + (feature.properties['Inspection_Date'] !== null ? autolinker.link(feature.properties['Inspection_Date'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Ward</th>\
+                        <td>' + (feature.properties['Ward'] !== null ? autolinker.link(feature.properties['Ward'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Commencement_Date</th>\
+                        <td>' + (feature.properties['Commencement_Date'] !== null ? autolinker.link(feature.properties['Commencement_Date'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_RecreationOct23_5_0() {
+            return {
+                pane: 'pane_RecreationOct23_5',
+                opacity: 1,
+                color: 'rgba(9,71,255,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 2.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(114,155,111,0.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_RecreationOct23_5');
+        map.getPane('pane_RecreationOct23_5').style.zIndex = 405;
+        map.getPane('pane_RecreationOct23_5').style['mix-blend-mode'] = 'normal';
+        var layer_RecreationOct23_5 = new L.geoJson(json_RecreationOct23_5, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_RecreationOct23_5',
+            layerName: 'layer_RecreationOct23_5',
+            pane: 'pane_RecreationOct23_5',
+            onEachFeature: pop_RecreationOct23_5,
+            style: style_RecreationOct23_5_0,
+        });
+        bounds_group.addLayer(layer_RecreationOct23_5);
+        map.addLayer(layer_RecreationOct23_5);
+        function pop_ServiceOct23_6(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">Inspector</th>\
+                        <td>' + (feature.properties['Inspector'] !== null ? autolinker.link(feature.properties['Inspector'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Type</th>\
+                        <td>' + (feature.properties['Type'] !== null ? autolinker.link(feature.properties['Type'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Photo</th>\
+                        <td>' + (feature.properties['Photo'] !== null ? '<img src="images/' + String(feature.properties['Photo']).replace(/[\\\/:]/g, '_').trim() + '">' : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Comment</th>\
+                        <td>' + (feature.properties['Comment'] !== null ? autolinker.link(feature.properties['Comment'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Inspection_Date</th>\
+                        <td>' + (feature.properties['Inspection_Date'] !== null ? autolinker.link(feature.properties['Inspection_Date'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Ward</th>\
+                        <td>' + (feature.properties['Ward'] !== null ? autolinker.link(feature.properties['Ward'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Commencement_Date</th>\
+                        <td>' + (feature.properties['Commencement_Date'] !== null ? autolinker.link(feature.properties['Commencement_Date'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_ServiceOct23_6_0() {
+            return {
+                pane: 'pane_ServiceOct23_6',
+                radius: 3.2,
+                opacity: 1,
+                color: 'rgba(255,255,255,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(244,3,168,1.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_ServiceOct23_6');
+        map.getPane('pane_ServiceOct23_6').style.zIndex = 406;
+        map.getPane('pane_ServiceOct23_6').style['mix-blend-mode'] = 'normal';
+        var layer_ServiceOct23_6 = new L.geoJson(json_ServiceOct23_6, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_ServiceOct23_6',
+            layerName: 'layer_ServiceOct23_6',
+            pane: 'pane_ServiceOct23_6',
+            onEachFeature: pop_ServiceOct23_6,
+            pointToLayer: function (feature, latlng) {
+                var context = {
+                    feature: feature,
+                    variables: {}
+                };
+                return L.shapeMarker(latlng, style_ServiceOct23_6_0(feature));
+            },
+        });
+        bounds_group.addLayer(layer_ServiceOct23_6);
+        map.addLayer(layer_ServiceOct23_6);
+            var title = new L.Control();
+            title.onAdd = function (map) {
+                this._div = L.DomUtil.create('div', 'info');
+                this.update();
+                return this._div;
+            };
+            title.update = function () {
+                this._div.innerHTML = '<h2>Munali Constituency CDF Project Monitoring Tool</h2>';
+            };
+            title.addTo(map);
+            var abstract = new L.Control({'position':'topright'});
+            abstract.onAdd = function (map) {
+                this._div = L.DomUtil.create('div',
+                'leaflet-control abstract');
+                this._div.id = 'abstract'
+
+                    abstract.show();
+                    return this._div;
+                };
+                abstract.show = function () {
+                    this._div.classList.remove("abstract");
+                    this._div.classList.add("abstractUncollapsed");
+                    this._div.innerHTML = 'This web map serves as a comprehensive tool for enhancing transparency, accountability and public participation in the monitoring of the implementation of Constituency Development Fund (CDF) funded physical projects.';
+            };
+            abstract.addTo(map);
+        var osmGeocoder = new L.Control.Geocoder({
+            collapsed: true,
+            position: 'topleft',
+            text: 'Search',
+            title: 'Testing'
+        }).addTo(map);
+        document.getElementsByClassName('leaflet-control-geocoder-icon')[0]
+        .className += ' fa fa-search';
+        document.getElementsByClassName('leaflet-control-geocoder-icon')[0]
+        .title += 'Search for a place';
+        var baseMaps = {};
+        L.control.layers(baseMaps,{'<img src="legend/ServiceOct23_6.png" /> Service (Oct-23)': layer_ServiceOct23_6,'<img src="legend/RecreationOct23_5.png" /> Recreation (Oct-23)': layer_RecreationOct23_5,'<img src="legend/BuildingOct23_4.png" /> Building (Oct-23)': layer_BuildingOct23_4,'<img src="legend/RoadOct23_3.png" /> Road (Oct-23)': layer_RoadOct23_3,'<img src="legend/MunaliConstituencyWards_2.png" /> Munali Constituency Wards': layer_MunaliConstituencyWards_2,"Google Labels": layer_GoogleLabels_1,"ESRI Satellite": layer_ESRISatellite_0,}).addTo(map);
+        setBounds();
+        var i = 0;
+        layer_MunaliConstituencyWards_2.eachLayer(function(layer) {
+            var context = {
+                feature: layer.feature,
+                variables: {}
+            };
+            layer.bindTooltip((layer.feature.properties['ward_name'] !== null?String('<div style="color: #ffffff; font-size: 7pt; font-family: \'Arial\', sans-serif;">' + layer.feature.properties['ward_name']) + '</div>':''), {permanent: true, offset: [-0, -16], className: 'css_MunaliConstituencyWards_2'});
+            labels.push(layer);
+            totalMarkers += 1;
+              layer.added = true;
+              addLabel(layer, i);
+              i++;
+        });
+        var mapDiv = document.getElementById('map');
+        var row = document.createElement('div');
+        row.className="row";
+        row.id="all";
+        row.style.height = "100%";
+        var col1 = document.createElement('div');
+        col1.className="col9";
+        col1.id = "mapWindow";
+        col1.style.height = "99%";
+        col1.style.width = "80%";
+        col1.style.display = "inline-block";
+        var col2 = document.createElement('div');
+        col2.className="col3";
+        col2.id = "menu";
+        col2.style.display = "inline-block";
+        mapDiv.parentNode.insertBefore(row, mapDiv);
+        document.getElementById("all").appendChild(col1);
+        document.getElementById("all").appendChild(col2);
+        col1.appendChild(mapDiv)
+        var Filters = {"Commencement_Date": "date","Inspection_Date": "datetime","Progress_percent": "int","Ward": "str","Inspector": "str","Type": "str","Stage": "str"};
+        function filterFunc() {
+          map.eachLayer(function(lyr){
+          if ("options" in lyr && "dataVar" in lyr["options"]){
+            features = this[lyr["options"]["dataVar"]].features.slice(0);
+            try{
+              for (key in Filters){
+                keyS = key.replace(/[^a-zA-Z0-9_]/g, "")
+                if (Filters[key] == "str" || Filters[key] == "bool"){
+                  var selection = [];
+                  var options = document.getElementById("sel_" + keyS).options
+                  for (var i=0; i < options.length; i++) {
+                    if (options[i].selected) selection.push(options[i].value);
+                  }
+                    try{
+                      if (key in features[0].properties){
+                        for (i = features.length - 1;
+                          i >= 0; --i){
+                          if (selection.indexOf(
+                          features[i].properties[key])<0
+                          && selection.length>0) {
+                          features.splice(i,1);
+                          }
+                        }
+                      }
+                    } catch(err){
+                  }
+                }
+                if (Filters[key] == "int"){
+                  sliderVals =  document.getElementById(
+                    "div_" + keyS).noUiSlider.get();
+                  try{
+                    if (key in features[0].properties){
+                    for (i = features.length - 1; i >= 0; --i){
+                      if (parseInt(features[i].properties[key])
+                          < sliderVals[0]
+                          || parseInt(features[i].properties[key])
+                          > sliderVals[1]){
+                            features.splice(i,1);
+                          }
+                        }
+                      }
+                    } catch(err){
+                    }
+                  }
+                if (Filters[key] == "real"){
+                  sliderVals =  document.getElementById(
+                    "div_" + keyS).noUiSlider.get();
+                  try{
+                    if (key in features[0].properties){
+                    for (i = features.length - 1; i >= 0; --i){
+                      if (features[i].properties[key]
+                          < sliderVals[0]
+                          || features[i].properties[key]
+                          > sliderVals[1]){
+                            features.splice(i,1);
+                          }
+                        }
+                      }
+                    } catch(err){
+                    }
+                  }
+                if (Filters[key] == "date"
+                  || Filters[key] == "datetime"
+                  || Filters[key] == "time"){
+                  try{
+                    if (key in features[0].properties){
+                      HTMLkey = key.replace(/[&\/\\#,+()$~%.'":*?<>{} ]/g, '');
+                      startdate = document.getElementById("dat_" +
+                        HTMLkey + "_date1").value.replace(" ", "T");
+                      enddate = document.getElementById("dat_" +
+                        HTMLkey + "_date2").value.replace(" ", "T");
+                      for (i = features.length - 1; i >= 0; --i){
+                        if (features[i].properties[key] < startdate
+                          || features[i].properties[key] > enddate){
+                          features.splice(i,1);
+                        }
+                      }
+                    }
+                  } catch(err){
+                  }
+                }
+              }
+            } catch(err){
+            }
+          this[lyr["options"]["layerName"]].clearLayers();
+          this[lyr["options"]["layerName"]].addData(features);
+        var i = 0;
+        layer_MunaliConstituencyWards_2.eachLayer(function(layer) {
+            var context = {
+                feature: layer.feature,
+                variables: {}
+            };
+            layer.bindTooltip((layer.feature.properties['ward_name'] !== null?String('<div style="color: #ffffff; font-size: 7pt; font-family: \'Arial\', sans-serif;">' + layer.feature.properties['ward_name']) + '</div>':''), {permanent: true, offset: [-0, -16], className: 'css_MunaliConstituencyWards_2'});
+            labels.push(layer);
+            totalMarkers += 1;
+              layer.added = true;
+              addLabel(layer, i);
+              i++;
+        });
+          }
+          })
+        }
+            document.getElementById("menu").appendChild(
+                document.createElement("div"));
+            var div_Commencement_Date_date1 = document.createElement("div");
+            div_Commencement_Date_date1.id = "div_Commencement_Date_date1";
+            div_Commencement_Date_date1.className= "filterselect";
+            document.getElementById("menu").appendChild(div_Commencement_Date_date1);
+            dat_Commencement_Date_date1 = document.createElement('input');
+            dat_Commencement_Date_date1.type = "text";
+            dat_Commencement_Date_date1.id = "dat_Commencement_Date_date1";
+            div_Commencement_Date_date1.appendChild(dat_Commencement_Date_date1);
+            var lab_Commencement_Date_date1 = document.createElement('div');
+            lab_Commencement_Date_date1.innerHTML  = 'Commencement_Date from';
+            lab_Commencement_Date_date1.className = 'filterlabel';
+            document.getElementById("div_Commencement_Date_date1").appendChild(
+                lab_Commencement_Date_date1);
+            var reset_Commencement_Date_date1 = document.createElement('div');
+            reset_Commencement_Date_date1.innerHTML = "clear";
+            reset_Commencement_Date_date1.className = 'filterlabel';
+            reset_Commencement_Date_date1.onclick = function() {
+                tail.DateTime("#dat_Commencement_Date_date1", {
+                    dateStart: 1648764000000,
+                    dateEnd: 1699221600000,
+                    dateFormat: 'YYYY-mm-dd',
+                    timeFormat: false,
+                    today: false,
+                    weekStart: 1,
+                    position: "left",
+                    closeButton: true,
+                    timeStepMinutes:1,
+                    timeStepSeconds: 1
+                }).selectDate(2022,4-1,1,0,0,0);
+                tail.DateTime("#dat_Commencement_Date_date1").reload()
+            }
+            document.getElementById("div_Commencement_Date_date1").appendChild(
+                reset_Commencement_Date_date1);
+            document.addEventListener("DOMContentLoaded", function(){
+                tail.DateTime("#dat_Commencement_Date_date1", {
+                    dateStart: 1648764000000,
+                    dateEnd: 1699221600000,
+                    dateFormat: 'YYYY-mm-dd',
+                    timeFormat: false,
+                    today: false,
+                    weekStart: 1,
+                    position: "left",
+                    closeButton: true,
+                    timeStepMinutes:1,
+                    timeStepSeconds: 1
+                }).selectDate(2022,4-1,1,0,0,0);
+                tail.DateTime("#dat_Commencement_Date_date1").reload()
+                tail.DateTime("#dat_Commencement_Date_date2", {
+                    dateStart: 1648764000000,
+                    dateEnd: 1699221600000,
+                    dateFormat: 'YYYY-mm-dd',
+                    timeFormat: false,
+                    today: false,
+                    weekStart: 1,
+                    position: "left",
+                    closeButton: true,
+                    timeStepMinutes:1,
+                    timeStepSeconds: 1
+                }).selectDate(2023,11-1,6,0,0,0);
+                tail.DateTime("#dat_Commencement_Date_date2").reload()
+                filterFunc()
+                dat_Commencement_Date_date1.onchange = function(){filterFunc()};
+                dat_Commencement_Date_date2.onchange = function(){filterFunc()};
+            });
+            var div_Commencement_Date_date2 = document.createElement("div");
+            div_Commencement_Date_date2.id = "div_Commencement_Date_date2";
+            div_Commencement_Date_date2.className= "filterselect";
+            document.getElementById("menu").appendChild(div_Commencement_Date_date2);
+            dat_Commencement_Date_date2 = document.createElement('input');
+            dat_Commencement_Date_date2.type = "text";
+            dat_Commencement_Date_date2.id = "dat_Commencement_Date_date2";
+            div_Commencement_Date_date2.appendChild(dat_Commencement_Date_date2);
+            var lab_Commencement_Date_date2 = document.createElement('div');
+            lab_Commencement_Date_date2.innerHTML  = 'Commencement_Date till';
+            lab_Commencement_Date_date2.className = 'filterlabel';
+            document.getElementById("div_Commencement_Date_date2")
+              .appendChild(lab_Commencement_Date_date2);
+            var reset_Commencement_Date_date2 = document.createElement('div');
+            reset_Commencement_Date_date2.innerHTML = "clear";
+            reset_Commencement_Date_date2.className = 'filterlabel';
+            reset_Commencement_Date_date2.onclick = function() {
+                tail.DateTime("#dat_Commencement_Date_date2", {
+                    dateStart: 1648764000000,
+                    dateEnd: 1699221600000,
+                    dateFormat: 'YYYY-mm-dd',
+                    timeFormat: false,
+                    today: false,
+                    weekStart: 1,
+                    position: "left",
+                    closeButton: true,
+                    timeStepMinutes:1,
+                    timeStepSeconds: 1
+                }).selectDate(2023,11-1,6,0,0,0);
+                tail.DateTime("#dat_Commencement_Date_date2").reload()
+            }
+            document.getElementById("div_Commencement_Date_date2").appendChild(
+                reset_Commencement_Date_date2);
+            document.getElementById("menu").appendChild(
+                document.createElement("div"));
+            var div_Inspection_Date_date1 = document.createElement("div");
+            div_Inspection_Date_date1.id = "div_Inspection_Date_date1";
+            div_Inspection_Date_date1.className= "filterselect";
+            document.getElementById("menu").appendChild(div_Inspection_Date_date1);
+            dat_Inspection_Date_date1 = document.createElement('input');
+            dat_Inspection_Date_date1.type = "text";
+            dat_Inspection_Date_date1.id = "dat_Inspection_Date_date1";
+            div_Inspection_Date_date1.appendChild(dat_Inspection_Date_date1);
+            var lab_Inspection_Date_date1 = document.createElement('div');
+            lab_Inspection_Date_date1.innerHTML  = 'Inspection_Date from';
+            lab_Inspection_Date_date1.className = 'filterlabel';
+            document.getElementById("div_Inspection_Date_date1").appendChild(
+                lab_Inspection_Date_date1);
+            var reset_Inspection_Date_date1 = document.createElement('div');
+            reset_Inspection_Date_date1.innerHTML = "clear";
+            reset_Inspection_Date_date1.className = 'filterlabel';
+            reset_Inspection_Date_date1.onclick = function() {
+                tail.DateTime("#dat_Inspection_Date_date1", {
+                    dateStart: 1697617366000,
+                    dateEnd: 1699008355000,
+                    dateFormat: 'YYYY-mm-dd',
+                    timeFormat: 'HH:ii:ss',
+                    today: false,
+                    weekStart: 1,
+                    position: "left",
+                    closeButton: true,
+                    timeStepMinutes:1,
+                    timeStepSeconds: 1
+                }).selectDate(2023,10-1,18,10,22,46);
+                tail.DateTime("#dat_Inspection_Date_date1").reload()
+            }
+            document.getElementById("div_Inspection_Date_date1").appendChild(
+                reset_Inspection_Date_date1);
+            document.addEventListener("DOMContentLoaded", function(){
+                tail.DateTime("#dat_Inspection_Date_date1", {
+                    dateStart: 1697617366000,
+                    dateEnd: 1699008355000,
+                    dateFormat: 'YYYY-mm-dd',
+                    timeFormat: 'HH:ii:ss',
+                    today: false,
+                    weekStart: 1,
+                    position: "left",
+                    closeButton: true,
+                    timeStepMinutes:1,
+                    timeStepSeconds: 1
+                }).selectDate(2023,10-1,18,10,22,46);
+                tail.DateTime("#dat_Inspection_Date_date1").reload()
+                tail.DateTime("#dat_Inspection_Date_date2", {
+                    dateStart: 1697617366000,
+                    dateEnd: 1699008355000,
+                    dateFormat: 'YYYY-mm-dd',
+                    timeFormat: 'HH:ii:ss',
+                    today: false,
+                    weekStart: 1,
+                    position: "left",
+                    closeButton: true,
+                    timeStepMinutes:1,
+                    timeStepSeconds: 1
+                }).selectDate(2023,11-1,3,12,45,55);
+                tail.DateTime("#dat_Inspection_Date_date2").reload()
+                filterFunc()
+                dat_Inspection_Date_date1.onchange = function(){filterFunc()};
+                dat_Inspection_Date_date2.onchange = function(){filterFunc()};
+            });
+            var div_Inspection_Date_date2 = document.createElement("div");
+            div_Inspection_Date_date2.id = "div_Inspection_Date_date2";
+            div_Inspection_Date_date2.className= "filterselect";
+            document.getElementById("menu").appendChild(div_Inspection_Date_date2);
+            dat_Inspection_Date_date2 = document.createElement('input');
+            dat_Inspection_Date_date2.type = "text";
+            dat_Inspection_Date_date2.id = "dat_Inspection_Date_date2";
+            div_Inspection_Date_date2.appendChild(dat_Inspection_Date_date2);
+            var lab_Inspection_Date_date2 = document.createElement('div');
+            lab_Inspection_Date_date2.innerHTML  = 'Inspection_Date till';
+            lab_Inspection_Date_date2.className = 'filterlabel';
+            document.getElementById("div_Inspection_Date_date2")
+              .appendChild(lab_Inspection_Date_date2);
+            var reset_Inspection_Date_date2 = document.createElement('div');
+            reset_Inspection_Date_date2.innerHTML = "clear";
+            reset_Inspection_Date_date2.className = 'filterlabel';
+            reset_Inspection_Date_date2.onclick = function() {
+                tail.DateTime("#dat_Inspection_Date_date2", {
+                    dateStart: 1697617366000,
+                    dateEnd: 1699008355000,
+                    dateFormat: 'YYYY-mm-dd',
+                    timeFormat: 'HH:ii:ss',
+                    today: false,
+                    weekStart: 1,
+                    position: "left",
+                    closeButton: true,
+                    timeStepMinutes:1,
+                    timeStepSeconds: 1
+                }).selectDate(2023,11-1,3,12,45,55);
+                tail.DateTime("#dat_Inspection_Date_date2").reload()
+            }
+            document.getElementById("div_Inspection_Date_date2").appendChild(
+                reset_Inspection_Date_date2);
+            document.getElementById("menu").appendChild(
+                document.createElement("div"));
+            var div_Progress_percent = document.createElement("div");
+            div_Progress_percent.id = "div_Progress_percent";
+            div_Progress_percent.className = "slider";
+            document.getElementById("menu").appendChild(div_Progress_percent);
+            var lab_Progress_percent = document.createElement('div');
+            lab_Progress_percent.innerHTML  = 'Progress_percent: <span id="val_Progress_percent"></span>';
+            lab_Progress_percent.className = 'filterlabel';
+            document.getElementById("menu").appendChild(lab_Progress_percent);
+            var reset_Progress_percent = document.createElement('div');
+            reset_Progress_percent.innerHTML = 'clear filter';
+            reset_Progress_percent.className = 'filterlabel';
+            lab_Progress_percent.className = 'filterlabel';
+            reset_Progress_percent.onclick = function() {
+                sel_Progress_percent.noUiSlider.reset();
+            };
+            document.getElementById("menu").appendChild(reset_Progress_percent);
+            var sel_Progress_percent = document.getElementById('div_Progress_percent');
+            noUiSlider.create(sel_Progress_percent, {
+                connect: true,
+                start: [0, 85],
+                step: 1,
+                format: wNumb({
+                    decimals: 0,
+                    }),
+                range: {
+                min: 0,
+                max: 85
+                }
+            });
+            sel_Progress_percent.noUiSlider.on('update', function (values) {
+            filterVals =[];
+            for (value in values){
+            filterVals.push(parseInt(value))
+            }
+            val_Progress_percent = document.getElementById('val_Progress_percent');
+            val_Progress_percent.innerHTML = values.join(' - ');
+                filterFunc()
+            });
+            document.getElementById("menu").appendChild(
+                document.createElement("div"));
+            var div_Ward = document.createElement('div');
+            div_Ward.id = "div_Ward";
+            div_Ward.className= "filterselect";
+            document.getElementById("menu").appendChild(div_Ward);
+            sel_Ward = document.createElement('select');
+            sel_Ward.multiple = true;
+            sel_Ward.size = 6;
+            sel_Ward.id = "sel_Ward";
+            var Ward_options_str = "<option value='' unselected></option>";
+            sel_Ward.onchange = function(){filterFunc()};
+            Ward_options_str  += '<option value="Chainda">Chainda</option>';
+            Ward_options_str  += '<option value="Chakunkula">Chakunkula</option>';
+            Ward_options_str  += '<option value="Kalikiliki">Kalikiliki</option>';
+            Ward_options_str  += '<option value="Kalingalinga">Kalingalinga</option>';
+            Ward_options_str  += '<option value="Mtendere">Mtendere</option>';
+            Ward_options_str  += '<option value="Munali">Munali</option>';
+            sel_Ward.innerHTML = Ward_options_str;
+            div_Ward.appendChild(sel_Ward);
+            var lab_Ward = document.createElement('div');
+            lab_Ward.innerHTML = 'Ward';
+            lab_Ward.className = 'filterlabel';
+            div_Ward.appendChild(lab_Ward);
+            var reset_Ward = document.createElement('div');
+            reset_Ward.innerHTML = 'clear filter';
+            reset_Ward.className = 'filterlabel';
+            reset_Ward.onclick = function() {
+                var options = document.getElementById("sel_Ward").options;
+                for (var i=0; i < options.length; i++) {
+                    options[i].selected = false;
+                }
+                filterFunc();
+            };
+            div_Ward.appendChild(reset_Ward);
+            document.getElementById("menu").appendChild(
+                document.createElement("div"));
+            var div_Inspector = document.createElement('div');
+            div_Inspector.id = "div_Inspector";
+            div_Inspector.className= "filterselect";
+            document.getElementById("menu").appendChild(div_Inspector);
+            sel_Inspector = document.createElement('select');
+            sel_Inspector.multiple = true;
+            sel_Inspector.size = 10;
+            sel_Inspector.id = "sel_Inspector";
+            var Inspector_options_str = "<option value='' unselected></option>";
+            sel_Inspector.onchange = function(){filterFunc()};
+            Inspector_options_str  += '<option value="Agness Mulemba">Agness Mulemba</option>';
+            Inspector_options_str  += '<option value="Brown Mwansa">Brown Mwansa</option>';
+            Inspector_options_str  += '<option value="Edmond Kachenje">Edmond Kachenje</option>';
+            Inspector_options_str  += '<option value="Emma Nswana">Emma Nswana</option>';
+            Inspector_options_str  += '<option value="Enock Bambe">Enock Bambe</option>';
+            Inspector_options_str  += '<option value="Faustinah Phiri">Faustinah Phiri</option>';
+            Inspector_options_str  += '<option value="Franklin Chola">Franklin Chola</option>';
+            Inspector_options_str  += '<option value="Gerald Muyombo">Gerald Muyombo</option>';
+            Inspector_options_str  += '<option value="Isaac Mphande">Isaac Mphande</option>';
+            Inspector_options_str  += '<option value="Jedidiah Chibinga">Jedidiah Chibinga</option>';
+            Inspector_options_str  += '<option value="Kaunda Choongo">Kaunda Choongo</option>';
+            Inspector_options_str  += '<option value="Luyando Mudenda">Luyando Mudenda</option>';
+            Inspector_options_str  += '<option value="Mukuka Mulenga">Mukuka Mulenga</option>';
+            Inspector_options_str  += '<option value="Natasha Ngangula">Natasha Ngangula</option>';
+            Inspector_options_str  += '<option value="Newton Chifunda">Newton Chifunda</option>';
+            Inspector_options_str  += '<option value="Otilia Muyabi">Otilia Muyabi</option>';
+            Inspector_options_str  += '<option value="Silas Chate">Silas Chate</option>';
+            sel_Inspector.innerHTML = Inspector_options_str;
+            div_Inspector.appendChild(sel_Inspector);
+            var lab_Inspector = document.createElement('div');
+            lab_Inspector.innerHTML = 'Inspector';
+            lab_Inspector.className = 'filterlabel';
+            div_Inspector.appendChild(lab_Inspector);
+            var reset_Inspector = document.createElement('div');
+            reset_Inspector.innerHTML = 'clear filter';
+            reset_Inspector.className = 'filterlabel';
+            reset_Inspector.onclick = function() {
+                var options = document.getElementById("sel_Inspector").options;
+                for (var i=0; i < options.length; i++) {
+                    options[i].selected = false;
+                }
+                filterFunc();
+            };
+            div_Inspector.appendChild(reset_Inspector);
+            document.getElementById("menu").appendChild(
+                document.createElement("div"));
+            var div_Type = document.createElement('div');
+            div_Type.id = "div_Type";
+            div_Type.className= "filterselect";
+            document.getElementById("menu").appendChild(div_Type);
+            sel_Type = document.createElement('select');
+            sel_Type.multiple = true;
+            sel_Type.size = 6;
+            sel_Type.id = "sel_Type";
+            var Type_options_str = "<option value='' unselected></option>";
+            sel_Type.onchange = function(){filterFunc()};
+            Type_options_str  += '<option value="Borehole">Borehole</option>';
+            Type_options_str  += '<option value="Classroom">Classroom</option>';
+            Type_options_str  += '<option value="Gravel">Gravel</option>';
+            Type_options_str  += '<option value="Police">Police</option>';
+            Type_options_str  += '<option value="Sports Field">Sports Field</option>';
+            Type_options_str  += '<option value="Wall fence">Wall fence</option>';
+            sel_Type.innerHTML = Type_options_str;
+            div_Type.appendChild(sel_Type);
+            var lab_Type = document.createElement('div');
+            lab_Type.innerHTML = 'Type';
+            lab_Type.className = 'filterlabel';
+            div_Type.appendChild(lab_Type);
+            var reset_Type = document.createElement('div');
+            reset_Type.innerHTML = 'clear filter';
+            reset_Type.className = 'filterlabel';
+            reset_Type.onclick = function() {
+                var options = document.getElementById("sel_Type").options;
+                for (var i=0; i < options.length; i++) {
+                    options[i].selected = false;
+                }
+                filterFunc();
+            };
+            div_Type.appendChild(reset_Type);
+            document.getElementById("menu").appendChild(
+                document.createElement("div"));
+            var div_Stage = document.createElement('div');
+            div_Stage.id = "div_Stage";
+            div_Stage.className= "filterselect";
+            document.getElementById("menu").appendChild(div_Stage);
+            sel_Stage = document.createElement('select');
+            sel_Stage.multiple = true;
+            sel_Stage.size = 8;
+            sel_Stage.id = "sel_Stage";
+            var Stage_options_str = "<option value='' unselected></option>";
+            sel_Stage.onchange = function(){filterFunc()};
+            Stage_options_str  += '<option value="Blockwork">Blockwork</option>';
+            Stage_options_str  += '<option value="Clearing">Clearing</option>';
+            Stage_options_str  += '<option value="Drainage">Drainage</option>';
+            Stage_options_str  += '<option value="Earthworks">Earthworks</option>';
+            Stage_options_str  += '<option value="Foundation">Foundation</option>';
+            Stage_options_str  += '<option value="Graveling">Graveling</option>';
+            Stage_options_str  += '<option value="Interior finish">Interior finish</option>';
+            Stage_options_str  += '<option value="Site clearing">Site clearing</option>';
+            sel_Stage.innerHTML = Stage_options_str;
+            div_Stage.appendChild(sel_Stage);
+            var lab_Stage = document.createElement('div');
+            lab_Stage.innerHTML = 'Stage';
+            lab_Stage.className = 'filterlabel';
+            div_Stage.appendChild(lab_Stage);
+            var reset_Stage = document.createElement('div');
+            reset_Stage.innerHTML = 'clear filter';
+            reset_Stage.className = 'filterlabel';
+            reset_Stage.onclick = function() {
+                var options = document.getElementById("sel_Stage").options;
+                for (var i=0; i < options.length; i++) {
+                    options[i].selected = false;
+                }
+                filterFunc();
+            };
+            div_Stage.appendChild(reset_Stage);
+        resetLabels([layer_MunaliConstituencyWards_2]);
+        map.on("zoomend", function(){
+            resetLabels([layer_MunaliConstituencyWards_2]);
+        });
+        map.on("layeradd", function(){
+            resetLabels([layer_MunaliConstituencyWards_2]);
+        });
+        map.on("layerremove", function(){
+            resetLabels([layer_MunaliConstituencyWards_2]);
+        });
+        </script>
+    </body>
+</html>
